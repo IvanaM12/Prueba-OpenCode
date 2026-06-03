@@ -36,7 +36,7 @@ INDEX_HTML = """
     .container { max-width: 1000px; margin: 24px auto; padding: 16px; }
 
     h1 { margin: 0 0 16px; font-weight: 700; letter-spacing: .3px; }
-    h2 { margin: 20px 0 10px; color: black; font-weight: 600; }
+    h2 { margin: 20px 0 10px; color: var(--ink); font-weight: 600; }
 
     .card {
       background: linear-gradient(180deg, rgba(37,99,235,0.08), rgba(0,0,0,0)) , var(--panel);
@@ -67,11 +67,11 @@ INDEX_HTML = """
       padding: 10px 12px;
       border-radius: 10px;
       border: 1px solid rgba(59,130,246,.4);
-      background: linear-gradient(180deg, var(--primary-2), var(--primary));
-      color: white;
+      background: var(--muted);
+      color: var(--ink);
       cursor: pointer;
       transition: transform .05s ease, box-shadow .15s ease;
-      box-shadow: 0 6px 16px rgba(37,99,235,.35);
+      box-shadow: 0 6px 16px gray;
     }
     button:hover { box-shadow: 0 10px 24px rgba(37,99,235,.45); }
     button:active { transform: translateY(1px); }
@@ -145,7 +145,7 @@ INDEX_HTML = """
 
     .badge {
       padding: 4px 8px; border-radius: 999px; font-size: 12px; border: 1px solid var(--border);
-      color: var(--muted);
+      color: var(--ink);
     }
   </style>
 </head>
