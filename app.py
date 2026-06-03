@@ -93,6 +93,7 @@ INDEX_HTML = """
     tr:hover { background: rgba(56,189,248,.06); }
 
     .pending { color: var(--accent); }
+    .stars { color: #fbbf24; } /* amber */
 
     a {
       color: #93c5fd;
@@ -122,18 +123,24 @@ INDEX_HTML = """
     </div>
 
     <div class=\"card\">
-      <h2>Añadir libro</h2>
-      <form method=\"post\" action=\"/add\">
-        <input class=\"span-3\" name=\"titulo\" placeholder=\"Título\" required />
-        <input class=\"span-3\" name=\"autor\" placeholder=\"Autor (opcional)\" />
-        <input class=\"span-2\" name=\"isbn\" placeholder=\"ISBN\" required />
-        <input class=\"span-2\" name=\"genero\" placeholder=\"Género\" />
-        <input class=\"span-1\" name=\"anio\" type=\"number\" placeholder=\"Año\" required />
-        <input class=\"span-1\" name=\"paginas\" type=\"number\" placeholder=\"Páginas\" required />
-        <button class=\"span-1\" type=\"submit\">Añadir</button>
+      <h2>{{ 'Editar libro' if edit else 'Añadir libro' }}</h2>
+      <form method=\"post\" action=\"{{ '/edit/' + edit.isbn if edit else '/add' }}\">
+        <input class=\"span-3\" name=\"titulo\" placeholder=\"Título\" value=\"{{ edit.titulo if edit else '' }}\" required />
+        <input class=\"span-3\" name=\"autor\" placeholder=\"Autor (opcional)\" value=\"{{ edit.autor if edit else '' }}\" />
+        <input class=\"span-2\" name=\"isbn\" placeholder=\"ISBN\" value=\"{{ edit.isbn if edit else '' }}\" {{ 'readonly' if edit else '' }} required />
+        <input class=\"span-2\" name=\"genero\" placeholder=\"Género\" value=\"{{ edit.genero if edit else '' }}\" />
+        <input class=\"span-1\" name=\"anio\" type=\"number\" placeholder=\"Año\" value=\"{{ edit.anio if edit else '' }}\" required />
+        <input class=\"span-1\" name=\"paginas\" type=\"number\" placeholder=\"Páginas\" value=\"{{ edit.paginas if edit else '' }}\" required />
+        <select class=\"span-1\" name=\"valoracion\">
+          <option value=\"\">Valoración</option>
+          {% for i in range(1,6) %}
+            <option value=\"{{ i }}\" {{ 'selected' if edit and edit.valoracion == i else '' }}>{{ i }}★</option>
+          {% endfor %}
+        </select>
+        <button class=\"span-1\" type=\"submit\">{{ 'Guardar' if edit else 'Añadir' }}</button>
       </form>
 
-      {% if error %}
+  {% if error %}
         <div class=\"error\">{{ error }}</div>
       {% endif %}
     </div>
@@ -142,7 +149,7 @@ INDEX_HTML = """
       <h2>Libros</h2>
       <table>
         <tr>
-          <th>Título</th><th>Autor</th><th>Año</th><th>Páginas</th><th>Estado</th><th>Acciones</th>
+          <th>Título</th><th>Autor</th><th>Año</th><th>Páginas</th><th>Valoración</th><th>Estado</th><th>Acciones</th>
         </tr>
         {% for l in libros %}
         <tr class=\"{{ 'pending' if not l.leido else '' }}\">
@@ -150,8 +157,19 @@ INDEX_HTML = """
           <td>{{ l.autor }}</td>
           <td>{{ l.anio }}</td>
           <td>{{ l.paginas }}</td>
+          <td>
+            {% if l.valoracion %}
+              <span class=\"stars\">{{ '★' * l.valoracion }}{{ '☆' * (5 - l.valoracion) }}</span>
+            {% else %}
+              -
+            {% endif %}
+          </td>
           <td>{{ 'Leído' if l.leido else 'Pendiente' }}</td>
           <td>
+            {% if not l.leido %}
+              <a href=\"/read/{{ l.isbn }}\">Marcar leído</a>
+            {% endif %}
+            <a href=\"/edit/{{ l.isbn }}\">Editar</a>
             <a href=\"/delete/{{ l.isbn }}\">Eliminar</a>
           </td>
         </tr>
@@ -167,7 +185,7 @@ INDEX_HTML = """
 @app.route("/")
 def index():
     libros = cargar_libros()
-    return render_template_string(INDEX_HTML, libros=libros, error=None)
+    return render_template_string(INDEX_HTML, libros=libros, error=None, edit=None)
 
 
 @app.route("/add", methods=["POST"])
@@ -184,12 +202,18 @@ def add():
             anio=int(data.get("anio", 0)),
             paginas=int(data.get("paginas", 0)),
         )
+        val = data.get("valoracion")
+        if val:
+            try:
+                libro.actualizar_valoracion(int(val))
+            except Exception:
+                pass
         libros.append(libro)
         guardar_libros(libros)
         return redirect(url_for("index"))
     except Exception as e:
         # Render same page with error message
-        return render_template_string(INDEX_HTML, libros=libros, error=str(e))
+        return render_template_string(INDEX_HTML, libros=libros, error=str(e), edit=None)
 
 
 @app.route("/delete/<isbn>")
@@ -198,6 +222,68 @@ def delete(isbn):
     libros = [l for l in libros if l.isbn != isbn]
     guardar_libros(libros)
     return redirect(url_for("index"))
+
+
+@app.route("/read/<isbn>")
+def mark_read(isbn):
+    libros = cargar_libros()
+    for l in libros:
+        if l.isbn == isbn:
+            # Marca como leído sin valoración (puede editarse luego)
+            l.marcar_leido(None, "")
+            break
+    guardar_libros(libros)
+    return redirect(url_for("index"))
+
+
+@app.route("/edit/<isbn>", methods=["GET", "POST"])
+def edit(isbn):
+    libros = cargar_libros()
+    libro = next((l for l in libros if l.isbn == isbn), None)
+    if not libro:
+        return redirect(url_for("index"))
+
+    if request.method == "POST":
+        data = request.form
+        try:
+            # Create a new validated instance, then replace fields
+            actualizado = Libro(
+                titulo=data.get("titulo", ""),
+                autor=data.get("autor", ""),
+                isbn=libro.isbn,
+                genero=data.get("genero", ""),
+                anio=int(data.get("anio", 0)),
+                paginas=int(data.get("paginas", 0)),
+            )
+
+            val = data.get("valoracion")
+            if val:
+                try:
+                    actualizado.actualizar_valoracion(int(val))
+                except Exception:
+                    pass
+            else:
+                actualizado.valoracion = None
+
+            # Preserve read-related fields
+            actualizado.leido = libro.leido
+            actualizado.valoracion = libro.valoracion
+            actualizado.fecha_lectura = libro.fecha_lectura
+            actualizado.notas = libro.notas
+
+            # Replace in list
+            for i, l in enumerate(libros):
+                if l.isbn == isbn:
+                    libros[i] = actualizado
+                    break
+
+            guardar_libros(libros)
+            return redirect(url_for("index"))
+        except Exception as e:
+            return render_template_string(INDEX_HTML, libros=libros, error=str(e), edit=libro)
+
+    # GET: show form prefilled
+    return render_template_string(INDEX_HTML, libros=libros, error=None, edit=libro)
 
 
 if __name__ == "__main__":
