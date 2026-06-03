@@ -1,0 +1,122 @@
+[
+  {
+    "titulo": "Cien años de soledad",
+    "autor": "Gabriel García Márquez",
+    "isbn": "978-0-06-088328-7",
+    "genero": "novela",
+    "anio": 1967,
+    "paginas": 471,
+    "leido": true,
+    "valoracion": 5,
+    "fecha_lectura": "2024-03-15",
+    "notas": "Una obra maestra del realismo mágico."
+  },
+  {
+    "titulo": "El nombre de la rosa",
+    "autor": "Umberto Eco",
+    "isbn": "978-84-350-0692-2",
+    "genero": "novela histórica",
+    "anio": 1980,
+    "paginas": 592,
+    "leido": true,
+    "valoracion": 4,
+    "fecha_lectura": "2024-06-20",
+    "notas": "Apasionante mezcla de misterio y filosofía medieval."
+  },
+  {
+    "titulo": "1984",
+    "autor": "George Orwell",
+    "isbn": "978-0-452-28423-4",
+    "genero": "distopía",
+    "anio": 1949,
+    "paginas": 328,
+    "leido": true,
+    "valoracion": 5,
+    "fecha_lectura": "2023-11-10",
+    "notas": "Inquietantemente vigente."
+  },
+  {
+    "titulo": "Sapiens",
+    "autor": "Yuval Noah Harari",
+    "isbn": "978-84-9992-186-5",
+    "genero": "no ficción",
+    "anio": 2011,
+    "paginas": 443,
+    "leido": false,
+    "valoracion": null,
+    "fecha_lectura": null,
+    "notas": ""
+  },
+  {
+    "titulo": "El Quijote",
+    "autor": "Miguel de Cervantes",
+    "isbn": "978-84-376-0494-7",
+    "genero": "novela",
+    "anio": 1605,
+    "paginas": 863,
+    "leido": false,
+    "valoracion": null,
+    "fecha_lectura": null,
+    "notas": "Pendiente desde hace demasiado tiempo..."
+  },
+  {
+    "titulo": "El universo en una cáscara de nuez",
+    "autor": "Stephen Hawking",
+    "isbn": "978-84-08-04394-3",
+    "genero": "ciencia",
+    "anio": 2001,
+    "paginas": 216,
+    "leido": true,
+    "valoracion": 4,
+    "fecha_lectura": "2024-01-05",
+    "notas": "Muy accesible para no ser físico."
+  },
+  {
+    "titulo": "Dune",
+    "autor": "Frank Herbert",
+    "isbn": "978-84-450-7444-0",
+    "genero": "ciencia ficción",
+    "anio": 1965,
+    "paginas": 688,
+    "leido": false,
+    "valoracion": null,
+    "fecha_lectura": null,
+    "notas": ""
+  },
+  {
+    "titulo": "Libro",
+    "autor": "autor",
+    "isbn": "123456",
+    "genero": "novela",
+    "anio": 1984,
+    "paginas": 100,
+    "leido": true,
+    "valoracion": null,
+    "fecha_lectura": "2026-06-03",
+    "notas": "Muy malo"
+  },
+  {
+    "titulo": "Fantastic Mr. Fox",
+    "autor": "Roald Dahl",
+    "isbn": "9780140328721",
+    "genero": "novela",
+    "anio": 1988,
+    "paginas": 96,
+    "leido": false,
+    "valoracion": null,
+    "fecha_lectura": null,
+    "notas": ""
+  },
+  {
+    "titulo": "La sombra del viento",
+    "autor": "Ruffus",
+    "isbn": "9788420424893",
+    "genero": "",
+    "anio": 1999,
+    "paginas": 300,
+    "leido": false,
+    "valoracion": null,
+    "fecha_lectura": null,
+    "notas": ""
+  }
+]
