@@ -36,7 +36,7 @@ INDEX_HTML = """
     .container { max-width: 1000px; margin: 24px auto; padding: 16px; }
 
     h1 { margin: 0 0 16px; font-weight: 700; letter-spacing: .3px; }
-    h2 { margin: 20px 0 10px; color: var(--muted); font-weight: 600; }
+    h2 { margin: 20px 0 10px; color: black; font-weight: 600; }
 
     .card {
       background: linear-gradient(180deg, rgba(37,99,235,0.08), rgba(0,0,0,0)) , var(--panel);
@@ -93,7 +93,41 @@ INDEX_HTML = """
     tr:hover { background: rgba(56,189,248,.06); }
 
     .pending { color: var(--accent); }
-    .stars { color: #fbbf24; } /* amber */
+    .stars { color: #fbbf24; }
+    :root {
+      --bg: #f4ecd8;          /* paper */
+      --card: #fbf6e8;        /* parchment */
+      --ink: #3b2f2f;         /* brown ink */
+      --muted: #e7dcc2;       /* light paper */
+      --border: #c9b48a;      /* aged border */
+      --accent: #7c5a2b;      /* leather */
+      --accent-2: #a67c52;    /* wood */
+    }
+    .actions { display: flex; gap: 8px; }
+    body { background: var(--bg); color: var(--ink); font-family: Georgia, 'Times New Roman', serif; }
+    .container { max-width: 1000px; margin: 28px auto; padding: 0 16px; }
+    .card { background: var(--card); border: 1px solid var(--border); border-radius: 6px; padding: 18px; box-shadow: 0 2px 6px rgba(0,0,0,0.08); }
+    h1 { font-size: 26px; margin-bottom: 14px; letter-spacing: 0.5px; }
+    .btn {
+      padding: 6px 10px; border-radius: 4px; text-decoration: none;
+      background: var(--muted); color: var(--ink); border: 1px solid var(--border);
+      font-size: 12px;
+    }
+    .btn:hover { background: #efe4c9; }
+    .btn.primary { background: var(--accent); color: #fff; border: 1px solid #6b4f24; }
+    .btn.danger { background: #8b0000; color: #fff; border: none; }
+
+    .rating {
+      display: flex;
+      gap: 4px;
+      font-size: 18px;
+      cursor: pointer;
+    }
+    .rating input { display: none; }
+    .rating label { color: #c7d2fe; }
+    .rating input:checked ~ label { color: #fbbf24; }
+    .rating label:hover,
+    .rating label:hover ~ label { color: #fbbf24; }
 
     a {
       color: #93c5fd;
@@ -131,12 +165,12 @@ INDEX_HTML = """
         <input class=\"span-2\" name=\"genero\" placeholder=\"Género\" value=\"{{ edit.genero if edit else '' }}\" />
         <input class=\"span-1\" name=\"anio\" type=\"number\" placeholder=\"Año\" value=\"{{ edit.anio if edit else '' }}\" required />
         <input class=\"span-1\" name=\"paginas\" type=\"number\" placeholder=\"Páginas\" value=\"{{ edit.paginas if edit else '' }}\" required />
-        <select class=\"span-1\" name=\"valoracion\">
-          <option value=\"\">Valoración</option>
-          {% for i in range(1,6) %}
-            <option value=\"{{ i }}\" {{ 'selected' if edit and edit.valoracion == i else '' }}>{{ i }}★</option>
+        <div class=\"span-2 rating\">
+          {% for i in range(5,0,-1) %}
+            <input type=\"radio\" id=\"star{{i}}\" name=\"valoracion\" value=\"{{i}}\" {{ 'checked' if edit and edit.valoracion == i else '' }} />
+            <label for=\"star{{i}}\">★</label>
           {% endfor %}
-        </select>
+        </div>
         <button class=\"span-1\" type=\"submit\">{{ 'Guardar' if edit else 'Añadir' }}</button>
       </form>
 
@@ -147,13 +181,13 @@ INDEX_HTML = """
 
     <div class=\"card\" style=\"margin-top:16px\">
       <h2>Libros</h2>
-      <table>
+      <table style="width:100%; border-collapse: collapse; font-size:14px;">
         <tr>
           <th>Título</th><th>Autor</th><th>Año</th><th>Páginas</th><th>Valoración</th><th>Estado</th><th>Acciones</th>
         </tr>
         {% for l in libros %}
-        <tr class=\"{{ 'pending' if not l.leido else '' }}\">
-          <td>{{ l.titulo }}</td>
+        <tr class=\"{{ 'pending' if not l.leido else '' }}\" style="border-top:1px solid var(--border);">
+          <td style="font-weight:600;">{{ l.titulo }}</td>
           <td>{{ l.autor }}</td>
           <td>{{ l.anio }}</td>
           <td>{{ l.paginas }}</td>
@@ -166,11 +200,13 @@ INDEX_HTML = """
           </td>
           <td>{{ 'Leído' if l.leido else 'Pendiente' }}</td>
           <td>
-            {% if not l.leido %}
-              <a href=\"/read/{{ l.isbn }}\">Marcar leído</a>
-            {% endif %}
-            <a href=\"/edit/{{ l.isbn }}\">Editar</a>
-            <a href=\"/delete/{{ l.isbn }}\">Eliminar</a>
+            <div class=\"actions\">
+              {% if not l.leido %}
+                <a class=\"btn primary\" href=\"/read/{{ l.isbn }}\">Leído</a>
+              {% endif %}
+              <a class=\"btn\" href=\"/edit/{{ l.isbn }}\">Editar</a>
+              <a class=\"btn danger\" href=\"/delete/{{ l.isbn }}\">Eliminar</a>
+            </div>
           </td>
         </tr>
         {% endfor %}
@@ -265,9 +301,8 @@ def edit(isbn):
             else:
                 actualizado.valoracion = None
 
-            # Preserve read-related fields
+            # Preserve read-related fields (but keep new valoracion)
             actualizado.leido = libro.leido
-            actualizado.valoracion = libro.valoracion
             actualizado.fecha_lectura = libro.fecha_lectura
             actualizado.notas = libro.notas
 
