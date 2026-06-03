@@ -54,3 +54,6 @@ Data flow: `main -> services -> model -> JSON`.
 - New filters/search → add to `services/busqueda.py`
 - New persistence format → isolate inside `almacenamiento.py`
 - UI changes → confined to `main.py`
+
+## Rules
+- Sé siempre muy breve no hace falta que te repitas muchas veces, con una lista y un breve resumen por ejemplo sobra.

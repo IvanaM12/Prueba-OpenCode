@@ -54,9 +54,9 @@
     "genero": "novela",
     "anio": 1605,
     "paginas": 863,
-    "leido": false,
+    "leido": true,
     "valoracion": null,
-    "fecha_lectura": null,
+    "fecha_lectura": "2026-06-03",
     "notas": "Pendiente desde hace demasiado tiempo..."
   },
   {
@@ -86,10 +86,10 @@
   {
     "titulo": "Libro",
     "autor": "autor",
-    "isbn": "123456",
+    "isbn": "123456789",
     "genero": "novela",
     "anio": 1984,
-    "paginas": 100,
+    "paginas": 140,
     "leido": true,
     "valoracion": null,
     "fecha_lectura": "2026-06-03",
@@ -114,6 +114,18 @@
     "genero": "",
     "anio": 1999,
     "paginas": 300,
+    "leido": true,
+    "valoracion": 4,
+    "fecha_lectura": "2026-06-03",
+    "notas": "Bien"
+  },
+  {
+    "titulo": "Noches blancas",
+    "autor": "Desconocido",
+    "isbn": "987654321",
+    "genero": "terror",
+    "anio": 2001,
+    "paginas": 134,
     "leido": false,
     "valoracion": null,
     "fecha_lectura": null,
