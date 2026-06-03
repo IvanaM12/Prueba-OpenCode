@@ -113,20 +113,44 @@ def agregar_libro(libros):
             anio_str = input(f"  Año [{datos.get('anio','')}]: ").strip()
             pags_str = input(f"  Páginas [{datos.get('paginas','')}]: ").strip()
 
-            anio = int(anio_str) if anio_str.isdigit() else datos.get('anio') or pedir_numero("  Año de publicación: ", 1, 2100)
+            from datetime import datetime
+            current_year = datetime.now().year
+            anio = int(anio_str) if anio_str.isdigit() else datos.get('anio') or pedir_numero(f"  Año de publicación (≤ {current_year}): ", 1, current_year)
             pags = int(pags_str) if pags_str.isdigit() else datos.get('paginas') or pedir_numero("  Número de páginas: ", 1, 99999)
         else:
             print("  No se encontraron datos automáticos. Introduce los datos manualmente.")
             t = input("  Título: ").strip()
             a = input("  Autor: ").strip()
             g = input("  Género: ").strip()
-            anio = pedir_numero("  Año de publicación: ", 1, 2100)
+            from datetime import datetime
+            current_year = datetime.now().year
+            anio = pedir_numero(f"  Año de publicación (≤ {current_year}): ", 1, current_year)
             pags = pedir_numero("  Número de páginas: ", 1, 99999)
     except KeyboardInterrupt:
         print("\n  Cancelado.")
         return
 
-    libro = Libro(titulo=t, autor=a, isbn=isbn, genero=g, anio=anio, paginas=pags)
+    # Validación en modelo: repetir hasta que sea válido
+    while True:
+        try:
+            libro = Libro(titulo=t, autor=a, isbn=isbn, genero=g, anio=anio, paginas=pags)
+            break
+        except ValueError as e:
+            print(f"  Error: {e}")
+            # Re-pedir solo el campo relacionado con el error
+            msg = str(e).lower()
+            from datetime import datetime
+            current_year = datetime.now().year
+
+            if "título" in msg:
+                t = input("  Título: ").strip()
+            if "autor" in msg:
+                a = input("  Autor (Enter = Desconocido): ").strip()
+            if "páginas" in msg:
+                pags = pedir_numero("  Número de páginas: ", 1, 99999)
+            if "año" in msg:
+                anio = pedir_numero(f"  Año de publicación (≤ {current_year}): ", 1, current_year)
+
     libros.append(libro)
     guardar_libros(libros)
     print(f'\n  ✓ "{t}" añadido correctamente.\n')

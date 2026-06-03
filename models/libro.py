@@ -1,6 +1,7 @@
 from dataclasses import dataclass, field
 from datetime import date
 from typing import Optional
+from datetime import datetime
 
 
 @dataclass
@@ -15,6 +16,36 @@ class Libro:
     valoracion: Optional[int] = None  # 1-5
     fecha_lectura: Optional[str] = None
     notas: str = ""
+
+    def __post_init__(self):
+        # Normalize strings
+        self.titulo = (self.titulo or "").strip()
+        self.autor = (self.autor or "").strip()
+
+        # Titulo obligatorio
+        if not self.titulo:
+            raise ValueError("El título no puede estar vacío.")
+
+        # Autor: default si vacío
+        if not self.autor:
+            self.autor = "Desconocido"
+
+        # Paginas > 0
+        try:
+            self.paginas = int(self.paginas)
+        except (TypeError, ValueError):
+            raise ValueError("El número de páginas debe ser un entero válido.")
+        if self.paginas <= 0:
+            raise ValueError("El número de páginas debe ser mayor que 0.")
+
+        # Año <= año actual
+        current_year = datetime.now().year
+        try:
+            self.anio = int(self.anio)
+        except (TypeError, ValueError):
+            raise ValueError("El año debe ser un número válido.")
+        if self.anio > current_year:
+            raise ValueError(f"El año no puede ser mayor que {current_year}.")
 
     def marcar_leido(self, valoracion: Optional[int] = None, notas: str = ""):
         self.leido = True
