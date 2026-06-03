@@ -81,5 +81,9 @@ class Libro:
         estrellas = ("[yellow]" + "★" * filled + "[/]") if filled else ""
         if empty:
             estrellas += f"[dim]{'☆' * empty}[/]"
-        estado = f"Leído {estrellas}" if self.leido else "Pendiente"
-        return f'"{self.titulo}" — {self.autor} ({self.anio}) [{estado}]'
+        estado = f"Leído {estrellas}" if self.leido else "[cyan]Pendiente[/]"
+        texto = f'"{self.titulo}" — {self.autor} ({self.anio}) [{estado}]'
+        # Color whole line for unread books
+        if not self.leido:
+            return f"[cyan]{texto}[/]"
+        return texto
